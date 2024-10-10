@@ -1,83 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:mb_transfer/feature/tranfer_bank_account/screen/tranfer_bank_account_screen.dart';
+import 'package:mb_transfer/utils/hex_color.dart';
+import 'package:mb_transfer/widget/app_appbar.dart';
+
+import 'feature/confirm_transaction/confirm_transaction_screen.dart';
+import 'feature/setlement/setlement_screen.dart';
+import 'feature/transaction/transaction_success/transaction_success_screen.dart';
+import 'feature/transaction_confirm/transaction_confirm_screen.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      onGenerateRoute: (settings) {
+        // Lấy route name từ settings
+        switch (settings.name) {
+          case '/':
+            return MaterialPageRoute(
+              builder: (context) => const TranferBankAccountScreen(),
+            );
+          case '/setlement':
+            return MaterialPageRoute(
+              builder: (context) => const SetlementScreen(),
+            );
+          case '/transactionConfirm':
+            // Nhận giá trị truyền vào qua arguments
+            final args = settings.arguments as int;
+
+            return MaterialPageRoute(
+              builder: (context) => TransactionConfirmScreen(receive: args),
+            );
+          case '/transactionSuccess':
+
+            final args = settings.arguments;
+
+            if (args is int) {
+              final intValue = args; // Giá trị args đã là int
+              return MaterialPageRoute(
+                builder: (context) => TransactionSuccessScreen(
+                  receive: intValue,
+                ),
+              );
+            } else {
+              const intValue = 0;
+              return MaterialPageRoute(
+                builder: (context) => const TransactionSuccessScreen(
+                  receive: intValue, // Truyền giá trị mặc định
+                ),
+              );
+            }
+
+          case '/confirmTransaction':
+            final args = settings.arguments;
+
+            if (args is int) {
+              final intValue = args; // Giá trị args đã là int
+              return MaterialPageRoute(
+                builder: (context) => ConfirmTransactionScreen(
+                  receive: intValue,
+                ),
+              );
+            } else {
+              const intValue = 0;
+              return MaterialPageRoute(
+                builder: (context) => const ConfirmTransactionScreen(
+                  receive: intValue, // Truyền giá trị mặc định
+                ),
+              );
+            }
+
+          default:
+            return MaterialPageRoute(
+                builder: (context) => MaterialApp(
+                      home: Scaffold(
+                        appBar: AppAppbar.appBar('404', context),
+                        body: const Center(
+                          child: Text('404'),
+                        ),
+                      ),
+                    ) // Bạn có thể tạo một màn hình 404 nếu cần.
+                );
+        }
+      },
+      initialRoute: '/',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primaryColor: HexColor.getColorFromHex('0177FB'),
+        fontFamily: 'AvertaStdCY',
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
